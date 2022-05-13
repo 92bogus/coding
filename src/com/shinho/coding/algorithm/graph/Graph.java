@@ -1,6 +1,9 @@
 package com.shinho.coding.algorithm.graph;
 
+import com.shinho.coding.algorithm.heap.PQNode;
+
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -11,42 +14,61 @@ import java.util.Queue;
 public class Graph {
     public static void main(String[] args) {
         Graph g = new Graph();
-        Vertex v1 = new Vertex("1");
-        Vertex v2 = new Vertex("2");
-        Vertex v3 = new Vertex("3");
-        Vertex v4 = new Vertex("4");
-        Vertex v5 = new Vertex("5");
+        Vertex A = new Vertex("A");
+        Vertex B = new Vertex("B");
+        Vertex C = new Vertex("C");
+        Vertex D = new Vertex("D");
+        Vertex E = new Vertex("E");
+        Vertex F = new Vertex("F");
+        Vertex G = new Vertex("G");
+        Vertex H = new Vertex("H");
+        Vertex I = new Vertex("I");
 
-        g.addVertex(v1);
-        g.addVertex(v2);
-        g.addVertex(v3);
-        g.addVertex(v4);
-        g.addVertex(v5);
+        g.addVertex(A);
+        g.addVertex(B);
+        g.addVertex(C);
+        g.addVertex(D);
+        g.addVertex(E);
+        g.addVertex(F);
+        g.addVertex(H);
+        g.addVertex(I);
 
-        g.addEdge(v1, new Edge(v1, v2, 0));
-        g.addEdge(v1, new Edge(v1, v3, 0));
-        g.addEdge(v1, new Edge(v1, v4, 0));
-        g.addEdge(v1, new Edge(v1, v5, 0));
+        g.addEdge(A, new Edge(A, B, 35));
+        g.addEdge(A, new Edge(A, E, 247));
 
-        g.addEdge(v2, new Edge(v2, v1, 0));
-        g.addEdge(v2, new Edge(v2, v3, 0));
-        g.addEdge(v2, new Edge(v2, v5, 0));
+        g.addEdge(B, new Edge(B, A, 35));
+        g.addEdge(B, new Edge(B, C, 126));
+        g.addEdge(B, new Edge(B, F, 150));
 
-        g.addEdge(v3, new Edge(v3, v1, 0));
-        g.addEdge(v3, new Edge(v3, v2, 0));
+        g.addEdge(C, new Edge(C, B, 126));
+        g.addEdge(C, new Edge(C, D, 117));
+        g.addEdge(C, new Edge(C, F, 162));
+        g.addEdge(C, new Edge(C, G, 220));
 
-        g.addEdge(v4, new Edge(v4, v1, 0));
-        g.addEdge(v4, new Edge(v4, v5, 0));
+        g.addEdge(D, new Edge(D, C, 117));
 
-        g.addEdge(v5, new Edge(v5, v1, 0));
-        g.addEdge(v5, new Edge(v5, v2, 0));
-        g.addEdge(v5, new Edge(v5, v4, 0));
+        g.addEdge(E, new Edge(E, A, 247));
+        g.addEdge(E, new Edge(E, F, 82));
+        g.addEdge(E, new Edge(E, H, 98));
+
+        g.addEdge(F, new Edge(F, B, 150));
+        g.addEdge(F, new Edge(F, C, 162));
+        g.addEdge(F, new Edge(F, E, 82));
+        g.addEdge(F, new Edge(F, H, 120));
+
+        g.addEdge(G, new Edge(G, C, 220));
+        g.addEdge(G, new Edge(G, F, 154));
+        g.addEdge(G, new Edge(G, I, 106));
+
+        g.addEdge(H, new Edge(H, E, 98));
+        g.addEdge(H, new Edge(H, F, 120));
+
+        g.addEdge(I, new Edge(I, G, 106));
 
         g.printGraph();
-        System.out.println();
-        //g.dfs(v1);
-        System.out.println("@@");
-        g.bfs(v1);
+
+        Graph mst = g.prim(A);
+        mst.printGraph();
     }
 
     enum VisitMode {
@@ -194,5 +216,22 @@ public class Graph {
                 e = e.next;
             }
         }
+    }
+
+    Graph prim(Vertex startVertex) {
+        Graph mst = new Graph();
+        PriorityQueue<Edge> queue = new PriorityQueue<>(Comparator.comparingInt(o -> o.weight)); // 최솟값 우선순위
+        int inf = 99999;
+
+        // mst 초기화
+        Vertex currentVertex = this.vertices;
+        while (currentVertex != null) {
+            Vertex newVertex = new Vertex(currentVertex.data);
+            mst.addVertex(newVertex);
+            currentVertex = currentVertex.next;
+        }
+
+
+        return mst;
     }
 }

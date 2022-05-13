@@ -1,24 +1,27 @@
 package com.shinho.coding.test;
 
+import com.shinho.coding.algorithm.heap.PQNode;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class Tester {
 
     public static void main(String[] args) {
-        int[] array = new int[] { 1, 5, 2, 6, 3, 7, 4 };
-        //Arrays.sort(array);
+        List<PQNode> list = new ArrayList<>();
+        list.add(new PQNode("공부", 3));
+        list.add(new PQNode("코딩", 2));
+        list.add(new PQNode("게임", 4));
+        list.add(new PQNode("취업", 1));
 
-        printArray(array);
+        list.sort((o1, o2) -> o1.getPriority() - o2.getPriority());
 
-        printArray(Arrays.copyOfRange(array, 1, 5));
-
-        printArray(array);
-    }
-
-
-    private static void printArray(int[] array) {
-        for (int i = 0; i < array.length; i++) {
-            System.out.println(array[i] + " ");
+        for (PQNode pqNode : list) {
+            System.out.println(pqNode.getData());
         }
     }
+
 }

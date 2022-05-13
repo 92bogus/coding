@@ -24,4 +24,5 @@ public class PQNode {
     public void setPriority(int priority) {
         this.priority = priority;
     }
+
 }
