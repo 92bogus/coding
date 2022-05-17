@@ -1,6 +1,7 @@
 package com.shinho.coding.algorithm.graph;
 
 import com.shinho.coding.algorithm.heap.PQNode;
+import com.shinho.coding.datastructure.tree.disjointset.DisjointSet;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
@@ -30,6 +31,7 @@ public class Graph {
         g.addVertex(D);
         g.addVertex(E);
         g.addVertex(F);
+        g.addVertex(G);
         g.addVertex(H);
         g.addVertex(I);
 
@@ -54,6 +56,7 @@ public class Graph {
         g.addEdge(F, new Edge(F, B, 150));
         g.addEdge(F, new Edge(F, C, 162));
         g.addEdge(F, new Edge(F, E, 82));
+        g.addEdge(F, new Edge(F, G, 82));
         g.addEdge(F, new Edge(F, H, 120));
 
         g.addEdge(G, new Edge(G, C, 220));
@@ -65,10 +68,58 @@ public class Graph {
 
         g.addEdge(I, new Edge(I, G, 106));
 
+        System.out.println("----------------- 원본 그래프---------------");
         g.printGraph();
 
-        Graph mst = g.prim(A);
+        //Graph mst = g.prim(A);
+        Graph mst = g.kruskal();
+        System.out.println("-----------------최소 신장 트리(크루스칼 알고리즘)-----------------");
         mst.printGraph();
+
+        Graph dag = new Graph();
+        Vertex AA = new Vertex('A');
+        Vertex BB = new Vertex('B');
+        Vertex CC = new Vertex('C');
+        Vertex DD = new Vertex('D');
+        Vertex EE = new Vertex('E');
+        Vertex FF = new Vertex('F');
+        Vertex GG = new Vertex('G');
+        Vertex HH = new Vertex('H');
+        Vertex II = new Vertex('I');
+
+        dag.addVertex(AA);
+        dag.addVertex(BB);
+        dag.addVertex(CC);
+        dag.addVertex(DD);
+        dag.addVertex(EE);
+        dag.addVertex(FF);
+        dag.addVertex(GG);
+        dag.addVertex(HH);
+        dag.addVertex(II);
+
+        dag.addEdge(AA, new Edge(AA, EE, 247));
+
+        dag.addEdge(BB, new Edge(BB, AA, 35));
+        dag.addEdge(BB, new Edge(BB, CC, 126));
+        dag.addEdge(BB, new Edge(BB, FF, 150));
+
+        dag.addEdge(CC, new Edge(CC, DD, 117));
+        dag.addEdge(CC, new Edge(CC, FF, 162));
+        dag.addEdge(CC, new Edge(CC, GG, 220));
+
+        dag.addEdge(EE, new Edge(EE, HH, 98));
+
+        dag.addEdge(FF, new Edge(FF, EE, 82));
+        dag.addEdge(FF, new Edge(FF, GG, 154));
+        dag.addEdge(FF, new Edge(FF, HH, 120));
+
+        dag.addEdge(GG, new Edge(GG, II, 106));
+
+        System.out.println("-----------------DAG----------------");
+        dag.printGraph();
+        Graph shortestPath = dag.dijkstra(BB);
+        System.out.println("------------------shortestPath(dijkstra)----------------");
+        shortestPath.printGraph();
     }
 
     enum VisitMode {
@@ -219,19 +270,137 @@ public class Graph {
     }
 
     Graph prim(Vertex startVertex) {
-        Graph mst = new Graph();
-        PriorityQueue<Edge> queue = new PriorityQueue<>(Comparator.comparingInt(o -> o.weight)); // 최솟값 우선순위
-        int inf = 99999;
+        return null;
+    }
 
-        // mst 초기화
-        Vertex currentVertex = this.vertices;
+    Graph kruskal() {
+        Graph mst = new Graph();    // 반환 할 최소 신장 트리
+        Vertex[] mstVertices = new Vertex[this.vertexCount];    // mst의 정점들을 모아둘 배열
+
+        DisjointSet[] vertexSet = new DisjointSet[this.vertexCount];    // 원본 그래프의 정점 분리 집합
+
+        PriorityQueue<Edge> queue = new PriorityQueue<>(Comparator.comparingInt(o -> o.weight)); // 간선을 오름차순으로 정렬하여 순차 탐색하기 위한 우선순위 큐
+
+        Vertex currentVertex = null;
+
+        int i = 0;
+
+        // step.1 모든 간선 오름차순 정렬하기 및 초기화
+        currentVertex = this.vertices;
+
         while (currentVertex != null) {
-            Vertex newVertex = new Vertex(currentVertex.data);
-            mst.addVertex(newVertex);
+            vertexSet[i] = new DisjointSet(currentVertex);  // 원본 정점의 분리 집합 생성
+
+            Vertex mstVertex = new Vertex(currentVertex.data);
+            mst.addVertex(mstVertex);  // 원본 정점을 복사하여 mst에 추가
+            mstVertices[i] = mstVertex; // 배열 형태도로 저장
+
+            Edge currentEdge = currentVertex.adjacencyList;
+
+            while (currentEdge != null) {
+                queue.add(currentEdge);
+                currentEdge = currentEdge.next;
+            }
+
             currentVertex = currentVertex.next;
+            i++;
         }
 
+        // step.2 정렬한 간선 순서대로 각각 from, to 정점이 분리 집합 관계일 경우, mst에 해당 간선을 추가한다.
+        while (!queue.isEmpty()) {
+            Edge currentEdge = queue.poll();
+            int fromIndex = currentEdge.from.index;
+            int toIndex = currentEdge.target.index;
+
+            if (vertexSet[fromIndex].findRoot() != vertexSet[toIndex].findRoot()) {
+                mst.addEdge(mstVertices[fromIndex], new Edge(mstVertices[fromIndex], mstVertices[toIndex], currentEdge.weight));
+                mst.addEdge(mstVertices[toIndex], new Edge(mstVertices[toIndex], mstVertices[fromIndex], currentEdge.weight));
+
+                vertexSet[fromIndex].unionSet(vertexSet[toIndex]);
+            }
+        }
 
         return mst;
+    }
+
+    Graph dijkstra(Vertex startVertex) {
+        Graph shortestPath = new Graph();
+        Vertex[] shortestPathVertices = new Vertex[this.vertexCount];   // 최단 경로 그래프의 정점 배열
+
+        Vertex[] fringes = new Vertex[this.vertexCount];                // ?
+        Vertex[] precedences = new Vertex[this.vertexCount];            // 해당 인덱스에 해당해는 정점의 이 전 우선순위 경로 ex) precedences[0]이 C다 -> 0번 인덱스에 해당하는
+                                                                        // 정점은 A 이므로 A는 이전 경로로 C를 통하여 방문한다
+        int[] weights = new int[this.vertexCount];                      // 해당 정점까지의 최단 경로 길이(가중치 합)
+
+        PriorityQueue<PQNode> queue = new PriorityQueue<>(Comparator.comparingInt(o -> o.priority));
+
+        Vertex currentVertex = this.vertices;
+
+        int i = 0;
+        int MAX_WEIGHT = 99999;
+
+        // step.1 초기화: 리턴할 최단 경로 그래프에 정점 추가
+        while (currentVertex != null) {
+            Vertex newVertex = new Vertex(currentVertex.data);
+            shortestPath.addVertex(newVertex);
+            shortestPathVertices[i] = newVertex;
+
+            fringes[i] = null;
+            precedences[i] = null;
+            weights[i] = MAX_WEIGHT;
+
+            currentVertex = currentVertex.next;
+            i++;
+        }
+
+        queue.add(new PQNode(startVertex, 0));  // 시작노드 추가
+        weights[startVertex.index] = 0; // 자기 자신의 거리는 0
+
+        while (!queue.isEmpty()) {
+            PQNode popped = queue.poll();
+            currentVertex = (Vertex) popped.data;
+
+            fringes[currentVertex.index] = currentVertex;
+
+            Edge currentEdge = currentVertex.adjacencyList;
+            while (currentEdge != null) {
+                Vertex targetVertex = currentEdge.target;
+                // ? && 현재 정점까지의 거리와 타겟 정점까지의 간선의 거리 합이 타겟 정점까지의 거리 합 보다 작은 경우, 타겟 정점까지의 거리 합 UPDATE
+                if (fringes[targetVertex.index] == null && weights[currentVertex.index] + currentEdge.weight < weights[targetVertex.index]) {
+                    PQNode newNode = new PQNode(targetVertex, currentEdge.weight);
+                    queue.add(newNode);
+                    precedences[targetVertex.index] = currentEdge.from;
+                    weights[targetVertex.index] = weights[currentVertex.index] + currentEdge.weight;
+                }
+
+                currentEdge = currentEdge.next;
+            }
+        }
+
+        for (i=0; i<this.vertexCount; i++) {
+            int fromIndex, toIndex;
+
+            if (precedences[i] == null)
+                continue;
+
+            fromIndex = precedences[i].index;
+            toIndex = i;
+
+            shortestPath.addEdge(
+                    shortestPathVertices[fromIndex],
+                    new Edge(shortestPathVertices[fromIndex], shortestPathVertices[toIndex], weights[i]));
+        }
+
+        System.out.print("precedences: ");
+        for (i=0; i<this.vertexCount; i++) {
+            if (precedences[i] != null)
+                System.out.print(precedences[i].data + " ");
+            else
+                System.out.print("null ");
+        }
+
+        System.out.println();
+
+        return shortestPath;
     }
 }

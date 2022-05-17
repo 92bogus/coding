@@ -23,7 +23,7 @@ public class PriorityQueueTester {
     }
 
     static void printNode(PQNode node) {
-        System.out.println("작업명: " + node.getData());
-        System.out.println("우선순위: " + node.getPriority());
+        System.out.println("작업명: " + node.data);
+        System.out.println("우선순위: " + node.priority);
     }
 }

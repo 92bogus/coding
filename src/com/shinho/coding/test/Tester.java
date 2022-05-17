@@ -17,10 +17,10 @@ public class Tester {
         list.add(new PQNode("게임", 4));
         list.add(new PQNode("취업", 1));
 
-        list.sort((o1, o2) -> o1.getPriority() - o2.getPriority());
+        list.sort((o1, o2) -> o1.priority - o2.priority);
 
         for (PQNode pqNode : list) {
-            System.out.println(pqNode.getData());
+            System.out.println(pqNode.data);
         }
     }
 
