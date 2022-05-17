@@ -2,9 +2,9 @@ package com.shinho.coding.algorithm.graph;
 
 import java.util.LinkedList;
 
-public class TopologicalSortGraph extends Graph {
+public class TopologicalSortAdjacencyListGraph extends AdjacencyListGraph {
     public static void main(String[] args) {
-        TopologicalSortGraph graph = new TopologicalSortGraph();
+        TopologicalSortAdjacencyListGraph graph = new TopologicalSortAdjacencyListGraph();
 
         Vertex A = new Vertex('A');
         Vertex B = new Vertex('B');
