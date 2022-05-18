@@ -55,15 +55,14 @@ public class Solution {
 
         while (!queue.isEmpty()) {
             Edge edge = queue.poll();
-            int from = edge.from;
-            int target = edge.target;
-            if(check[target]) continue;
+            int currentVertex = edge.target;
 
-            check[target] = true;
-            for (Edge currentEdge : adj[target]) {
-                if (!check[currentEdge.target] && dist[currentEdge.target] > dist[from] + currentEdge.weight) {
+            check[currentVertex] = true;
+            List<Edge> currentEdgeList = adj[currentVertex];
+            for (Edge currentEdge : currentEdgeList) {
+                if (!check[currentEdge.target] && dist[currentEdge.target] > dist[currentEdge.from] + currentEdge.weight) {
                     queue.add(currentEdge);
-                    dist[target] = dist[from] + currentEdge.weight;
+                    dist[currentEdge.target] = dist[currentEdge.from] + currentEdge.weight;
                 }
             }
         }

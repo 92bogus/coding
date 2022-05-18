@@ -10,9 +10,9 @@ import java.util.Queue;
 /**
  * 인접 리스트(Adjacency List)로 Graph 구현하기
  */
-public class AdjacencyListGraph {
+public class Graph {
     public static void main(String[] args) {
-        AdjacencyListGraph g = new AdjacencyListGraph();
+        Graph g = new Graph();
         Vertex A = new Vertex("A");
         Vertex B = new Vertex("B");
         Vertex C = new Vertex("C");
@@ -70,11 +70,11 @@ public class AdjacencyListGraph {
         g.printGraph();
 
         //Graph mst = g.prim(A);
-        AdjacencyListGraph mst = g.kruskal();
+        Graph mst = g.kruskal();
         System.out.println("-----------------최소 신장 트리(크루스칼 알고리즘)-----------------");
         mst.printGraph();
 
-        AdjacencyListGraph dag = new AdjacencyListGraph();
+        Graph dag = new Graph();
         Vertex AA = new Vertex('A');
         Vertex BB = new Vertex('B');
         Vertex CC = new Vertex('C');
@@ -115,7 +115,7 @@ public class AdjacencyListGraph {
 
         System.out.println("-----------------DAG----------------");
         dag.printGraph();
-        AdjacencyListGraph shortestPath = dag.dijkstra(BB);
+        Graph shortestPath = dag.dijkstra(BB);
         System.out.println("------------------shortestPath(dijkstra)----------------");
         shortestPath.printGraph();
     }
@@ -124,7 +124,7 @@ public class AdjacencyListGraph {
         VISITED, NOT_VISITED
     }
 
-    static class Vertex {
+    public static class Vertex {
         Object data;
         VisitMode visited;
         int index;
@@ -159,7 +159,7 @@ public class AdjacencyListGraph {
     Vertex vertices;
     int vertexCount;
 
-    public AdjacencyListGraph() {
+    public Graph() {
         this.vertexCount = 0;
     }
 
@@ -267,12 +267,12 @@ public class AdjacencyListGraph {
         }
     }
 
-    AdjacencyListGraph prim(Vertex startVertex) {
+    Graph prim(Vertex startVertex) {
         return null;
     }
 
-    AdjacencyListGraph kruskal() {
-        AdjacencyListGraph mst = new AdjacencyListGraph();    // 반환 할 최소 신장 트리
+    Graph kruskal() {
+        Graph mst = new Graph();    // 반환 할 최소 신장 트리
         Vertex[] mstVertices = new Vertex[this.vertexCount];    // mst의 정점들을 모아둘 배열
 
         DisjointSet[] vertexSet = new DisjointSet[this.vertexCount];    // 원본 그래프의 정점 분리 집합
@@ -321,8 +321,8 @@ public class AdjacencyListGraph {
         return mst;
     }
 
-    AdjacencyListGraph dijkstra(Vertex startVertex) {
-        AdjacencyListGraph shortestPath = new AdjacencyListGraph();
+    Graph dijkstra(Vertex startVertex) {
+        Graph shortestPath = new Graph();
         Vertex[] shortestPathVertices = new Vertex[this.vertexCount];   // 최단 경로 그래프의 정점 배열
 
         Vertex[] fringes = new Vertex[this.vertexCount];                // 이미 지난 경로인지 확인?
