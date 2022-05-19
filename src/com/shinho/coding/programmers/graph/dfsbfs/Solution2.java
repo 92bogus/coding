@@ -1,105 +1,60 @@
 package com.shinho.coding.programmers.graph.dfsbfs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Solution2 {
-    enum VisitMode {
-        VISITED, NOT_VISITED
-    }
-    static class Graph {
-        Vertex vertices;
-        int vertexCount;
-
-        public Graph() {
-            this.vertexCount = 0;
-        }
-
-        void addVertex(Vertex v) {
-            if (this.vertices == null)
-                this.vertices = v;
-            else {
-                Vertex currentVertex = this.vertices;
-                while (currentVertex.next != null) {
-                    currentVertex = currentVertex.next;
-                }
-                currentVertex.next = v;
-                v.index = this.vertexCount++;
-            }
-        }
-
-        void addEdge(Vertex v, Edge e) {
-            if (v.adjacencyList == null)
-                v.adjacencyList = e;
-            else {
-                Edge currentEdge = v.adjacencyList;
-                while (currentEdge.next != null) {
-                    currentEdge = currentEdge.next;
-                }
-                currentEdge.next = e;
-            }
-
-        }
-    }
-    static class Vertex {
+    static class DisjointSet {
+        DisjointSet parent;
         Object data;
-        Edge adjacencyList;
-        VisitMode visited;
-        Vertex next;
-        int index;
 
-        public Vertex(Object data) {
+        public DisjointSet(Object data) {
             this.data = data;
-            this.adjacencyList = null;
-            this.visited = VisitMode.NOT_VISITED;
-            this.next = null;
-            this.index = -1;
+            this.parent = null;
         }
-    }
 
-    static class Edge {
-        Vertex target;
-        int weight;
-        Edge next;
+        DisjointSet findParent() {
+            if (this.parent == null)
+                return this;
 
-        public Edge(Vertex target) {
-            this.target = target;
-            this.weight = 1;
-            this.next = null;
+            DisjointSet root = this.parent;
+            while (root.parent != null) {
+                root = root.parent;
+            }
+
+            return root;
+        }
+
+        void union(DisjointSet target) {
+            DisjointSet px = findParent();
+            DisjointSet py = target.findParent();
+
+            if (px != py)
+                py.parent = px;
         }
     }
 
     public int solution(int n, int[][] computers) {
-        Vertex[] vertexList = new Vertex[n];
-        Graph g = new Graph();
-
+        DisjointSet[] coms = new DisjointSet[n];
         for (int i=0; i<n; i++) {
-            Vertex newVertex = new Vertex(i);
-            vertexList[i] = newVertex;
+            coms[i] = new DisjointSet(i);
         }
 
         for (int i=0; i<n; i++) {
             for (int j=0; j<n; j++) {
-                if (i != j && computers[i][j] == 1) {
-                    g.addEdge(vertexList[i], new Edge(vertexList[j]));
+                if (i == j) continue;
+                if (computers[i][j] == 1) {
+                    coms[i].union(coms[j]);
                 }
             }
         }
 
-        for (Vertex vertex : vertexList) {
-            dfs(vertex);
-        }
-    }
-
-    private void dfs(Vertex v) {
-        System.out.println(v.data);
-        v.visited = VisitMode.VISITED;
-
-        Edge e = v.adjacencyList;
-        while (e != null) {
-            Vertex targetVertex = e.target;
-            if (targetVertex != null && targetVertex.visited == VisitMode.NOT_VISITED ) {
-                dfs(targetVertex);
-            }
-            e = e.next;
+        int count = 0;
+        for (int i=0; i<n; i++) {
+            if (coms[i].parent == null)
+                count++;
         }
 
+        return count;
     }
 }
