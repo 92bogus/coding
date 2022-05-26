@@ -4,6 +4,7 @@ import com.shinho.coding.algorithm.heap.PQNode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -11,17 +12,13 @@ import java.util.PriorityQueue;
 public class Tester {
 
     public static void main(String[] args) {
-        List<PQNode> list = new ArrayList<>();
-        list.add(new PQNode("공부", 3));
-        list.add(new PQNode("코딩", 2));
-        list.add(new PQNode("게임", 4));
-        list.add(new PQNode("취업", 1));
-
-        list.sort((o1, o2) -> o1.priority - o2.priority);
-
-        for (PQNode pqNode : list) {
-            System.out.println(pqNode.data);
-        }
+        int[] arr = new int[] { 2, 10, 4, 5, 1, 9};
+        Integer[] temp = Arrays.stream(arr).boxed().toArray(Integer[]::new);
     }
 
+    static void printArray(int[] arr) {
+        for (int i=0; i<arr.length; i++) {
+            System.out.print(arr[i] + " ");
+        }
+    }
 }
