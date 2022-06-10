@@ -34,6 +34,10 @@ public class Main05 {
         return answer;
     }
 
+    /*
+
+        Character.isAlphabetic()
+     */
     public static boolean isNotAlphabet(char target) {
         boolean answer = false;
 
